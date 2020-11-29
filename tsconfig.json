@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["dom", "ES2019"],
+    "module": "commonjs",
+    "outDir": "./dist",
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2019",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types",
+      ]
+  }
+}
