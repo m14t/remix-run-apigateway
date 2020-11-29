@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRequestHandler = void 0;
 const core = require('@remix-run/core');
+require('./fetch-globals');
 const create_pojo_headers_1 = __importDefault(require("./create-pojo-headers"));
 const create_remix_request_1 = __importDefault(require("./create-remix-request"));
 const create_remix_session_1 = __importDefault(require("./create-remix-session"));

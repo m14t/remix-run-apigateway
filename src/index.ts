@@ -10,6 +10,7 @@ import type { AppLoadContext } from '@remix-run/core';
 import type { default as RemixCore } from '@remix-run/core';
 const core: typeof RemixCore = require('@remix-run/core');
 
+require('./fetch-globals');
 import createPojoHeaders from './create-pojo-headers';
 import createRemixRequest from './create-remix-request';
 import createRemixSession from './create-remix-session';
