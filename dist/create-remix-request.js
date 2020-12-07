@@ -15,7 +15,13 @@ function createRemixRequest(event) {
         method: method,
     };
     if (method !== 'GET' && method !== 'HEAD') {
-        init.body = event.body;
+        if (event.isBase64Encoded && event.body) {
+            let buff = Buffer.from(event.body, 'base64');
+            init.body = buff.toString('ascii');
+        }
+        else {
+            init.body = event.body;
+        }
     }
     return new core_1.Request(url.toString(), init);
 }
