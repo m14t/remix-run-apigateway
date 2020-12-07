@@ -48,5 +48,6 @@
     "lint": "eslint --max-warnings 0 --ext .js,.jsx,.ts,.tsx src/",
     "test": "jest"
   },
+  "types": "dist/index.d.js",
   "version": "0.8.0"
 }

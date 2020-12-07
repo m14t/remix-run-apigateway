@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
+    "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["dom", "ES2019"],
     "module": "commonjs",
