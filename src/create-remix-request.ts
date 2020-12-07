@@ -21,7 +21,7 @@ function createRemixRequest(event: APIGatewayProxyEventV2): RemixRequest {
 
   if (method !== 'GET' && method !== 'HEAD') {
     if (event.isBase64Encoded && event.body) {
-      let buff = Buffer.from(event.body, 'base64');
+      const buff = Buffer.from(event.body, 'base64');
       init.body = buff.toString('ascii');
     } else {
       init.body = event.body;
