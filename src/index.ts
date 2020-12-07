@@ -1,7 +1,7 @@
 import type {
   APIGatewayProxyEventV2,
   APIGatewayProxyHandlerV2,
-  APIGatewayProxyResultV2,
+  APIGatewayProxyStructuredResultV2,
   Context,
 } from 'aws-lambda';
 
@@ -61,7 +61,7 @@ export function createRequestHandler(
   return async (
     event: APIGatewayProxyEventV2,
     context: Context,
-  ): Promise<APIGatewayProxyResultV2> => {
+  ): Promise<APIGatewayProxyStructuredResultV2> => {
     if (!remixConfig) {
       try {
         remixConfig = await remixConfigPromise;
@@ -107,7 +107,7 @@ export function createRequestHandler(
     try {
       const remixRes = await handleRequest(remixReq, session, loadContext);
 
-      const result: APIGatewayProxyResultV2 = {
+      const result: APIGatewayProxyStructuredResultV2 = {
         // QUESTION: Do we need to support streams? remixRes.body.pipe(res);
         body: remixRes.body?.toString() || '',
         headers: createPojoHeaders(remixRes.headers),

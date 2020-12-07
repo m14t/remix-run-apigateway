@@ -1,6 +1,6 @@
 import type {
   APIGatewayProxyEventV2,
-  APIGatewayProxyResultV2,
+  APIGatewayProxyStructuredResultV2,
 } from 'aws-lambda';
 import { RemixConfig } from '@remix-run/core';
 
@@ -16,7 +16,7 @@ const readFileAsync = util.promisify(fs.readFile);
 async function serveStaticFileIfExists(
   event: APIGatewayProxyEventV2,
   remixConfig: RemixConfig,
-): Promise<APIGatewayProxyResultV2> {
+): Promise<APIGatewayProxyStructuredResultV2> {
   // QUESTION: Is there a cleaner way to get this path?
   const publicDirectory = remixConfig.browserBuildDirectory.replace(
     remixConfig.publicPath.replace(/\/$/, ''), // Remove any trailing / from publicPath
