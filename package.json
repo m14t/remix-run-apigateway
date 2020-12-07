@@ -5,15 +5,19 @@
   },
   "dependencies": {
     "@remix-run/core": "^0.8.0",
-    "mime-types": "^2.1.27"
+    "jsonwebtoken": "^8.5.1",
+    "mime-types": "^2.1.27",
+    "tough-cookie": "^4.0.0"
   },
   "description": "AWS API Gateway v2 request handler for Remix",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.64",
     "@types/jest": "^26.0.15",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/mime-types": "^2.1.0",
     "@types/node": "^12.19.7",
     "@types/node-fetch": "^2.5.7",
+    "@types/tough-cookie": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
     "eslint": "^7.14.0",

@@ -11,11 +11,12 @@ import type { default as RemixCore } from '@remix-run/core';
 const core: typeof RemixCore = require('@remix-run/core');
 
 require('./fetch-globals');
+import { SessionHandler, nullSessionHandler } from './session-handler';
 import createPojoHeaders from './create-pojo-headers';
 import createRemixRequest from './create-remix-request';
-import createRemixSession from './create-remix-session';
 import serveStaticFileIfExists from './serve-static-file-if-exists';
-import warnOnce from './warn-once';
+
+export { jwtCookieSessionHandlerFactory } from './session-handler';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function handleConfigError(error: any) {
@@ -30,23 +31,15 @@ export interface GetLoadContext {
 
 interface createRequestHandlerArg {
   getLoadContext?: GetLoadContext;
-  enableSessions: boolean;
-  getSessionData?: (
-    event: APIGatewayProxyEventV2,
-  ) => RemixCore.SessionMutableData;
-  destroySessionData?: () => Promise<void>;
+  sessionHandler?: SessionHandler;
   root?: string;
 }
 
-export function createRequestHandler(
-  {
-    getLoadContext,
-    root: remixRoot,
-    enableSessions = true,
-  }: createRequestHandlerArg = {
-    enableSessions: true,
-  },
-): APIGatewayProxyHandlerV2 {
+export function createRequestHandler({
+  getLoadContext,
+  root: remixRoot,
+  sessionHandler = nullSessionHandler,
+}: createRequestHandlerArg): APIGatewayProxyHandlerV2 {
   let handleRequest: RemixCore.RequestHandler;
   let remixConfig: RemixCore.RemixConfig;
 
@@ -79,14 +72,6 @@ export function createRequestHandler(
       // no-op
     }
 
-    warnOnce(
-      enableSessions,
-      "You've enabled sessions but these aren't supported yet, so you won't " +
-        'be able to use sessions in your Remix data loaders and actions. ' +
-        'Use `createRequestHandler({ enableSessions: false })` to silence this ' +
-        'warning.',
-    );
-
     let loadContext;
 
     if (getLoadContext) {
@@ -102,17 +87,29 @@ export function createRequestHandler(
     }
 
     const remixReq: RemixCore.Request = createRemixRequest(event);
-    const session: RemixCore.Session = createRemixSession(event);
+    const sessionData = (await sessionHandler.getSessionData(event)) || {};
+    const session: RemixCore.Session = core.createSession(
+      sessionData,
+      async () => {
+        if (sessionHandler.destroySessionData) {
+          await sessionHandler.destroySessionData(sessionData);
+        }
+      },
+    );
 
     try {
       const remixRes = await handleRequest(remixReq, session, loadContext);
 
-      const result: APIGatewayProxyStructuredResultV2 = {
-        // QUESTION: Do we need to support streams? remixRes.body.pipe(res);
-        body: remixRes.body?.toString() || '',
-        headers: createPojoHeaders(remixRes.headers),
-        statusCode: remixRes.status,
-      };
+      const result: APIGatewayProxyStructuredResultV2 = await sessionHandler.serializeSessionData(
+        sessionData,
+        {
+          // QUESTION: Do we need to support streams? remixRes.body.pipe(res);
+          body: remixRes.body?.toString() || '',
+          // TODO: convert the remix Cookie header to a AWS Response cookie here
+          headers: createPojoHeaders(remixRes.headers),
+          statusCode: remixRes.status,
+        },
+      );
 
       return result;
     } catch (error) {
